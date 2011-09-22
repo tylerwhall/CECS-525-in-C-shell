@@ -9,8 +9,11 @@ CFLAGS=-nostdlib -nostartfiles -nodefaultlibs
 CFLAGS+=-m68000
 CFLAGS+=-Os
 
-main: assembly.o iv.o screen.o main.o exception.o linker.x
-	${LD} main.o assembly.o iv.o screen.o exception.o -o main -T linker.x -Map main.map
+SOURCES=assembly.c screen.c main.c exception.c
+OBJECTS=$(subst .c,.o,$(SOURCES))
+
+main: ${OBJECTS} iv.o linker.x
+	${LD} ${OBJECTS} iv.o -o main -T linker.x -Map main.map
 	cp main attach_gdb_to_this
 	${OBJCOPY} -O srec main
 
@@ -20,17 +23,15 @@ disassemble: main
 iv.o: iv.asm
 	${AS} -o iv.o iv.asm
 
-main.o: main.c
-	${CC} ${CFLAGS} -c main.c -o main.o
+%.o: %.c
+	${CC} ${CFLAGS} -o $@ -c $<
+%.d: %.c
+	$(CC) -M $(CPPFLAGS) $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$
 
-assembly.o: assembly.h assembly.c
-	${CC} ${CFLAGS} -o assembly.o -c assembly.c
-
-screen.o: screen.h screen.c assembly.h
-	${CC} ${CFLAGS} -o screen.o -c screen.c
-
-exception.o: exception.c
-	${CC} ${CFLAGS} -o exception.o -c exception.c
+DEPENDS=$(subst .c,.d,$(SOURCES))
+-include ${DEPENDS}
 
 run: main
 	${QEMU} -M cecs -nographic -kernel main -gdb tcp::1234
@@ -39,5 +40,5 @@ debug: main
 	${QEMU} -M cecs -nographic -kernel main -S -gdb tcp::1234
 
 clean:
-	rm assembly.o screen.o iv.o attach_gdb_to_this main main.o main.map
+	rm iv.o attach_gdb_to_this main main.map ${DEPENDS} ${OBJECTS}
 
