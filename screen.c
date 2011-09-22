@@ -36,14 +36,14 @@ void getstr(char *str, int buffer) {
 	for (i=0; i < buffer-1; i++)
 	{
 		ch = getch();
-		if (ch == 13) //if enter key is hit stop
+		if (ch == '\r') //if enter key is hit stop
 		{
 			break;
 		}
 		str[i] = ch;
 		putch(ch);
 	}
-	str[i+1] = 0;
+	str[i] = 0;
 	putch('\n');
 }
 
@@ -54,3 +54,19 @@ char getch() {
 	return ch;
 }
 
+void puthexint(int input) {
+	char hex[] = "00000000";
+	int i;
+	for (i = 0; i < 8; i++) {
+		hex[i] = (char) (input & 0xf);
+		input >>= 4;
+		if (hex[i] <= 9)
+			hex[i] += '0';
+		else
+			hex[i] += 'a';
+	}
+	putstr("0x");
+	for (i = 0; hex[i] == '0' && i < 7; i++);
+	int j = 0;
+	for (j=i; j < 8; j++);putch(hex[7-i]);
+}

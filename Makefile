@@ -10,7 +10,7 @@ CFLAGS+=-Wall -Werror
 CFLAGS+=-m68000
 CFLAGS+=-Os
 
-SOURCES=assembly.c screen.c main.c exception.c
+SOURCES=assembly.c screen.c main.c exception.c kmem.c string.c
 OBJECTS=$(subst .c,.o,$(SOURCES))
 
 main: ${OBJECTS} iv.o linker.x
@@ -18,6 +18,8 @@ main: ${OBJECTS} iv.o linker.x
 	cp main attach_gdb_to_this
 	${OBJCOPY} -O srec main
 
+string.o: string.h string.c
+	${CC} ${CFLAGS} -c string.c -o string.o
 disassemble: main
 	${OBJDUMP} -D attach_gdb_to_this
 
