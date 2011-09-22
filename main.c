@@ -1,7 +1,7 @@
 #include "assembly.h"
 #include "screen.h"
 
-void main() {
+void entry() {
 	char str[10];
 	
 	__asm_initialize__();

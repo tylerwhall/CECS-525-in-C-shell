@@ -1,6 +1,6 @@
 	.equ	__asm_stack__,0x4400
 	.section .text
-	dc.l	__asm_stack__,main
+	dc.l	__asm_stack__,entry
 	dc.l	excep_undef
 	dc.l	excep_undef
 	/* 4 */

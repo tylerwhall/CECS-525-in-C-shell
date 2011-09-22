@@ -6,6 +6,7 @@ OBJCOPY=m68k-elf-objcopy
 QEMU=/opt/m68k/bin/qemu-system-m68k
 
 CFLAGS=-nostdlib -nostartfiles -nodefaultlibs
+CFLAGS+=-Wall -Werror
 CFLAGS+=-m68000
 CFLAGS+=-Os
 
